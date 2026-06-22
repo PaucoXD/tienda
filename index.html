@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draguz Shop | Diseño y Calidad</title>
+    <style>
+        :root { --primary: #7F77DD; --bg: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; background-color: var(--bg); }
+        .hero { text-align: center; padding: 40px 0; border-bottom: 2px solid var(--border); }
+        .logo { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+        
+        .studio-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; margin: 40px 0; }
+        @media(max-width: 768px) { .studio-grid { grid-template-columns: 1fr; } }
+        
+        canvas { width: 100%; border: 1px solid var(--border); border-radius: 12px; background: #f9f9f9; }
+        .upload-btn { display: block; width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f4f4f4; text-align: left; padding: 12px; }
+        td { border-bottom: 1px solid var(--border); padding: 12px; }
+        .price-highlight { color: var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="logo">DRAGUZ<span>.</span>SHOP</div>
+    <p>Calidad premium en cada estampa.</p>
+</header>
+
+<section id="sec-studio">
+    <h3>Previsualizador en tiempo real</h3>
+    <div class="studio-grid">
+        <canvas id="c" width="400" height="400"></canvas>
+        <div class="panel">
+            <button class="upload-btn" onclick="document.getElementById('fi').click()">Subir diseño (PNG/JPG)</button>
+            <input type="file" id="fi" accept="image/*" style="display:none" onchange="loadDesign(this)">
+            <p style="font-size: 14px; color: var(--text); margin-top: 20px;">
+                <strong>Instrucciones:</strong> Sube tu diseño y aparecerá en el canvas. Asegúrate que tu archivo tenga fondo transparente para un mejor acabado.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="sec-precios">
+    <h3>Tabla de Precios</h3>
+    <table>
+        <thead><tr><th>Producto</th><th>Menudeo</th><th>Mayoreo (6+)</th></tr></thead>
+        <tbody>
+            <tr><td>Corte Normal</td><td>$190</td><td class="price-highlight">$150</td></tr>
+            <tr><td>Oversize</td><td>$220</td><td class="price-highlight">$180</td></tr>
+            <tr><td>Tipo Polo</td><td>$260</td><td class="price-highlight">$220</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<script>
+    const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+    let dImg = null;
+
+    function render() {
+        ctx.clearRect(0,0,400,400);
+        ctx.fillStyle = '#f9f9f9'; ctx.fillRect(0,0,400,400);
+        if(dImg) {
+            // Centrar imagen automáticamente
+            const size = 200;
+            ctx.drawImage(dImg, 100, 100, size, size);
+        }
+    }
+
+    function loadDesign(input) {
+        if(input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                dImg = new Image();
+                dImg.onload = render;
+                dImg.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    render();
+</script>
+</body>
+</html>
