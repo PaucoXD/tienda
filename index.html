@@ -3,57 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draguz Shop | Diseño y Calidad</title>
+    <title>Draguz Shop | Impresión Personalizada</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
-        :root { --primary: #7F77DD; --bg: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; background-color: var(--bg); }
-        .hero { text-align: center; padding: 40px 0; border-bottom: 2px solid var(--border); }
-        .logo { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
-        .logo span { color: var(--primary); }
-        
-        .studio-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; margin: 40px 0; }
-        @media(max-width: 768px) { .studio-grid { grid-template-columns: 1fr; } }
-        
-        canvas { width: 100%; border: 1px solid var(--border); border-radius: 12px; background: #f9f9f9; }
-        .upload-btn { display: block; width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f4f4f4; text-align: left; padding: 12px; }
-        td { border-bottom: 1px solid var(--border); padding: 12px; }
-        .price-highlight { color: var(--primary); font-weight: bold; }
+        :root { --primary: #7F77DD; --bg: #ffffff; --text: #1a1a1a; --border: #eee; }
+        body { font-family: 'Segoe UI', sans-serif; color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
+        .hero { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); }
+        .studio-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin: 2rem 0; }
+        canvas { width: 100%; max-width: 400px; border-radius: 12px; background: #f9f9f9; border: 1px solid var(--border); }
+        .section { padding: 2rem 0; border-bottom: 1px solid var(--border); }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .card { border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
+        .upload-btn { background: var(--primary); color: white; padding: 10px; width: 100%; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header class="hero">
-    <div class="logo">DRAGUZ<span>.</span>SHOP</div>
-    <p>Calidad premium en cada estampa.</p>
+    <h1>DRAGUZ<span>.</span>SHOP</h1>
+    <p>Tu diseño en cualquier producto.</p>
 </header>
 
-<section id="sec-studio">
-    <h3>Previsualizador en tiempo real</h3>
+<section id="sec-studio" class="section">
+    <h3>Previsualizador</h3>
     <div class="studio-grid">
         <canvas id="c" width="400" height="400"></canvas>
         <div class="panel">
-            <button class="upload-btn" onclick="document.getElementById('fi').click()">Subir diseño (PNG/JPG)</button>
+            <button class="upload-btn" onclick="document.getElementById('fi').click()">Subir diseño</button>
             <input type="file" id="fi" accept="image/*" style="display:none" onchange="loadDesign(this)">
-            <p style="font-size: 14px; color: var(--text); margin-top: 20px;">
-                <strong>Instrucciones:</strong> Sube tu diseño y aparecerá en el canvas. Asegúrate que tu archivo tenga fondo transparente para un mejor acabado.
-            </p>
         </div>
     </div>
 </section>
 
-<section id="sec-precios">
-    <h3>Tabla de Precios</h3>
+<section id="sec-precios" class="section">
+    <h3>Precios</h3>
     <table>
         <thead><tr><th>Producto</th><th>Menudeo</th><th>Mayoreo (6+)</th></tr></thead>
         <tbody>
-            <tr><td>Corte Normal</td><td>$190</td><td class="price-highlight">$150</td></tr>
-            <tr><td>Oversize</td><td>$220</td><td class="price-highlight">$180</td></tr>
-            <tr><td>Tipo Polo</td><td>$260</td><td class="price-highlight">$220</td></tr>
+            <tr><td>Corte Normal</td><td>$190</td><td>$150</td></tr>
+            <tr><td>Oversize</td><td>$220</td><td>$180</td></tr>
+            <tr><td>Tipo Polo</td><td>$260</td><td>$220</td></tr>
         </tbody>
     </table>
+</section>
+
+<section id="sec-faq" class="section">
+    <h3>Preguntas frecuentes</h3>
+    <div class="card">
+        <p><strong>¿Cuánto tarda mi pedido?</strong><br>Producción en 2–3 días hábiles tras aprobación.</p>
+        <p><strong>¿Qué formatos aceptan?</strong><br>PNG, PDF, AI y SVG con fondo transparente.</p>
+    </div>
 </section>
 
 <script>
@@ -61,12 +62,14 @@
     let dImg = null;
 
     function render() {
-        ctx.clearRect(0,0,400,400);
-        ctx.fillStyle = '#f9f9f9'; ctx.fillRect(0,0,400,400);
+        ctx.clearRect(0, 0, 400, 400);
+        ctx.fillStyle = '#f9f9f9'; ctx.fillRect(0, 0, 400, 400);
         if(dImg) {
-            // Centrar imagen automáticamente
-            const size = 200;
-            ctx.drawImage(dImg, 100, 100, size, size);
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.globalAlpha = 0.85;
+            ctx.drawImage(dImg, 100, 100, 200, 200);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1.0;
         }
     }
 
