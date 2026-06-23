@@ -1,90 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draguz Shop | Impresión Personalizada</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <style>
-        :root { --primary: #7F77DD; --bg: #ffffff; --text: #1a1a1a; --border: #eee; }
-        body { font-family: 'Segoe UI', sans-serif; color: var(--text); line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
-        .hero { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); }
-        .studio-grid { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin: 2rem 0; }
-        canvas { width: 100%; max-width: 400px; border-radius: 12px; background: #f9f9f9; border: 1px solid var(--border); }
-        .section { padding: 2rem 0; border-bottom: 1px solid var(--border); }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-        .card { border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
-        .upload-btn { background: var(--primary); color: white; padding: 10px; width: 100%; border: none; border-radius: 5px; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draguz Shop - Custom Apparel 3D</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
+  <div class="nav">
+    <div class="logo">DRAGUZ<span>.</span>SHOP</div>
+    <div class="nav-links">
+      <a href="#sec-como">Cómo funciona</a>
+      <a href="#sec-precios">Precios</a>
+      <a href="#sec-galeria">Galería</a>
+      <a href="#sec-faq">FAQ</a>
+    </div>
+  </div>
 
-<header class="hero">
-    <h1>DRAGUZ<span>.</span>SHOP</h1>
-    <p>Tu diseño en cualquier producto.</p>
-</header>
+  <div class="hero">
+    <p class="section-label">Impresión personalizada</p>
+    <h1>Tu diseño en cualquier<br><span>prenda o producto</span></h1>
+    <p>Sube tu imagen, elige el producto y recíbelo en 2–3 días hábiles.</p>
+    <div class="hero-btns">
+      <a href="#sec-studio" class="btn-primary"><i class="ti ti-brush"></i> Diseñar ahora</a>
+    </div>
+  </div>
 
-<section id="sec-studio" class="section">
-    <h3>Previsualizador</h3>
-    <div class="studio-grid">
-        <canvas id="c" width="400" height="400"></canvas>
-        <div class="panel">
-            <button class="upload-btn" onclick="document.getElementById('fi').click()">Subir diseño</button>
-            <input type="file" id="fi" accept="image/*" style="display:none" onchange="loadDesign(this)">
+  <div class="section" id="sec-studio">
+    <p class="section-label">Previsualizador 3D</p>
+    <p class="section-title">Personaliza tu diseño</p>
+    
+    <div class="studio">
+      <div class="canvas-wrap">
+        <canvas id="c" width="320" height="320"></canvas>
+        <p style="font-size:11px; color:#4B5563; margin-top:.5rem; text-align:center;">Gira la prenda con tu dedo o mouse</p>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-card">
+          <p class="plabel">Color de la prenda</p>
+          <div class="color-row">
+            <div class="cdot" style="background: #ffffff; border: 1px solid #ccc;" onclick="cambiarColorPlayera('#ffffff')"></div>
+            <div class="cdot" style="background: #1a1a1a;" onclick="cambiarColorPlayera('#1a1a1a')"></div>
+            <div class="cdot" style="background: #c0392b;" onclick="cambiarColorPlayera('#c0392b')"></div>
+            <div class="cdot" style="background: #2471a3;" onclick="cambiarColorPlayera('#2471a3')"></div>
+            <div class="cdot" style="background: #f1c40f;" onclick="cambiarColorPlayera('#f1c40f')"></div>
+          </div>
+
+          <p class="plabel" style="margin-top: 15px;">Tu diseño (Frente)</p>
+          <button class="upload-btn" onclick="document.getElementById('fi').click()">
+            <i class="ti ti-upload"></i> Subir imagen
+          </button>
+          <input type="file" id="fi" accept="image/*" style="display:none" onchange="window.loadDesign(this)">
         </div>
+        <button class="order-btn"><i class="ti ti-brand-whatsapp"></i> Enviar por WhatsApp</button>
+      </div>
     </div>
-</section>
+  </div>
 
-<section id="sec-precios" class="section">
-    <h3>Precios</h3>
-    <table>
-        <thead><tr><th>Producto</th><th>Menudeo</th><th>Mayoreo (6+)</th></tr></thead>
-        <tbody>
-            <tr><td>Corte Normal</td><td>$190</td><td>$150</td></tr>
-            <tr><td>Oversize</td><td>$220</td><td>$180</td></tr>
-            <tr><td>Tipo Polo</td><td>$260</td><td>$220</td></tr>
-        </tbody>
-    </table>
-</section>
-
-<section id="sec-faq" class="section">
-    <h3>Preguntas frecuentes</h3>
-    <div class="card">
-        <p><strong>¿Cuánto tarda mi pedido?</strong><br>Producción en 2–3 días hábiles tras aprobación.</p>
-        <p><strong>¿Qué formatos aceptan?</strong><br>PNG, PDF, AI y SVG con fondo transparente.</p>
-    </div>
-</section>
-
-<script>
-    const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-    let dImg = null;
-
-    function render() {
-        ctx.clearRect(0, 0, 400, 400);
-        ctx.fillStyle = '#f9f9f9'; ctx.fillRect(0, 0, 400, 400);
-        if(dImg) {
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.globalAlpha = 0.85;
-            ctx.drawImage(dImg, 100, 100, 200, 200);
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.globalAlpha = 1.0;
-        }
-    }
-
-    function loadDesign(input) {
-        if(input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                dImg = new Image();
-                dImg.onload = render;
-                dImg.src = e.target.result;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-    render();
-</script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
