@@ -1,0 +1,51 @@
+/* Variables Globales y Reset */
+:root {
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F3F4F6;
+  --color-border-secondary: #D1D5DB;
+  --color-border-tertiary: #E5E7EB;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
+html { 
+  scroll-behavior: smooth; 
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Estilos específicos para el Canvas 3D */
+canvas {
+  border-radius: var(--border-radius-md);
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.12));
+  background-color: var(--color-background-secondary);
+  cursor: grab;
+}
+
+canvas:active {
+  cursor: grabbing;
+}
+
+/* Botones de Colores */
+.color-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cdot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cdot:hover {
+  transform: scale(1.1);
+}
+
+/* --- PEGA AQUÍ ABAJO EL RESTO DE TU CSS ORIGINAL (nav, hero, panel, etc.) --- */
