@@ -3,62 +3,551 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Draguz Shop - Custom Apparel 3D</title>
+  <title>Draguz Shop — Impresión Personalizada</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
-  <div class="nav">
-    <div class="logo">DRAGUZ<span>.</span>SHOP</div>
-    <div class="nav-links">
-      <a href="#sec-como">Cómo funciona</a>
-      <a href="#sec-precios">Precios</a>
-      <a href="#sec-galeria">Galería</a>
-      <a href="#sec-faq">FAQ</a>
+
+<!-- ══ NAV ══ -->
+<nav class="nav" id="mainNav">
+  <div class="logo">DRAGUZ<span>.</span>SHOP</div>
+  <div class="nav-links">
+    <a href="#sec-como"     onclick="navTo('sec-como')">Cómo funciona</a>
+    <a href="#sec-studio"   onclick="navTo('sec-studio')">Diseñar</a>
+    <a href="#sec-precios"  onclick="navTo('sec-precios')">Precios</a>
+    <a href="#sec-galeria"  onclick="navTo('sec-galeria')">Galería</a>
+    <a href="#sec-faq"      onclick="navTo('sec-faq')">FAQ</a>
+  </div>
+  <button class="nav-cta" onclick="navTo('sec-studio')">
+    <i class="ti ti-brush"></i> Diseñar
+  </button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="sec-hero">
+  <div class="hero-badge"><i class="ti ti-star-filled"></i> +500 pedidos entregados</div>
+  <h1>Tu diseño en cualquier<br><span>prenda o producto</span></h1>
+  <p>Sube tu imagen, elige el producto y recíbelo en 2–3 días hábiles.<br>Atención directa por tus redes favoritas.</p>
+  <div class="hero-btns">
+    <a href="#sec-studio" class="btn-primary" onclick="navTo('sec-studio')"><i class="ti ti-brush"></i> Diseñar ahora</a>
+    <a href="#sec-precios" class="btn-secondary" onclick="navTo('sec-precios')">Ver precios</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><strong>2–3</strong><span>días hábiles</span></div>
+    <div class="stat-div"></div>
+    <div class="stat"><strong>6+</strong><span>productos</span></div>
+    <div class="stat-div"></div>
+    <div class="stat"><strong>100%</strong><span>personalizado</span></div>
+  </div>
+</section>
+
+<!-- ══ CÓMO FUNCIONA ══ -->
+<section class="section" id="sec-como">
+  <p class="section-label">El proceso</p>
+  <p class="section-title">¿Cómo funciona?</p>
+  <p class="section-sub">Desde tu diseño hasta tu puerta en 4 pasos simples.</p>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-icon"><i class="ti ti-photo-up"></i></div>
+      <div class="step-name">Sube tu diseño</div>
+      <div class="step-desc">Usa nuestro previsualizador 3D para ver exactamente cómo quedará tu diseño sobre la prenda antes de pedir.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-icon"><i class="ti ti-brand-whatsapp"></i></div>
+      <div class="step-name">Contáctanos</div>
+      <div class="step-desc">Mándanos tu pedido por WhatsApp, Instagram, Facebook o la red que prefieras. Te respondemos en minutos.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-icon"><i class="ti ti-file-check"></i></div>
+      <div class="step-name">Aprueba la prueba</div>
+      <div class="step-desc">Te enviamos una prueba digital antes de producir. Sin tu aprobación no producimos nada. Sin sorpresas.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-icon"><i class="ti ti-package"></i></div>
+      <div class="step-name">Recíbelo</div>
+      <div class="step-desc">Producción en 2–3 días hábiles. Entrega a domicilio a toda la república o recolección en punto local.</div>
     </div>
   </div>
+</section>
 
-  <div class="hero">
-    <p class="section-label">Impresión personalizada</p>
-    <h1>Tu diseño en cualquier<br><span>prenda o producto</span></h1>
-    <p>Sube tu imagen, elige el producto y recíbelo en 2–3 días hábiles.</p>
-    <div class="hero-btns">
-      <a href="#sec-studio" class="btn-primary"><i class="ti ti-brush"></i> Diseñar ahora</a>
-    </div>
-  </div>
+<!-- ══ STUDIO 3D ══ -->
+<section class="section" id="sec-studio">
+  <p class="section-label">Previsualizador 3D</p>
+  <p class="section-title">Personaliza tu diseño</p>
+  <p class="section-sub">Sube tu imagen y mírala aplicada en tiempo real sobre la prenda.</p>
 
-  <div class="section" id="sec-studio">
-    <p class="section-label">Previsualizador 3D</p>
-    <p class="section-title">Personaliza tu diseño</p>
-    
-    <div class="studio">
-      <div class="canvas-wrap">
-        <canvas id="c" width="320" height="320"></canvas>
-        <p style="font-size:11px; color:#4B5563; margin-top:.5rem; text-align:center;">Gira la prenda con tu dedo o mouse</p>
+  <div class="studio">
+    <div class="canvas-wrap">
+      <div class="canvas-loader" id="canvasLoader">
+        <div class="loader-spinner"></div>
+        <span id="canvasStatus">Cargando modelo 3D…</span>
       </div>
-      
-      <div class="panel">
-        <div class="panel-card">
-          <p class="plabel">Color de la prenda</p>
-          <div class="color-row">
-            <div class="cdot" style="background: #ffffff; border: 1px solid #ccc;" onclick="cambiarColorPlayera('#ffffff')"></div>
-            <div class="cdot" style="background: #1a1a1a;" onclick="cambiarColorPlayera('#1a1a1a')"></div>
-            <div class="cdot" style="background: #c0392b;" onclick="cambiarColorPlayera('#c0392b')"></div>
-            <div class="cdot" style="background: #2471a3;" onclick="cambiarColorPlayera('#2471a3')"></div>
-            <div class="cdot" style="background: #f1c40f;" onclick="cambiarColorPlayera('#f1c40f')"></div>
-          </div>
+      <canvas id="c" width="420" height="420"></canvas>
+      <p class="canvas-hint">
+        <i class="ti ti-rotate-clockwise"></i> Gira con mouse o dedo · Scroll para zoom
+      </p>
+    </div>
 
-          <p class="plabel" style="margin-top: 15px;">Tu diseño (Frente)</p>
-          <button class="upload-btn" onclick="document.getElementById('fi').click()">
-            <i class="ti ti-upload"></i> Subir imagen
-          </button>
-          <input type="file" id="fi" accept="image/*" style="display:none" onchange="window.loadDesign(this)">
+    <div class="panel">
+      <!-- Color -->
+      <div class="panel-card">
+        <p class="plabel"><i class="ti ti-palette"></i> Color de la prenda</p>
+        <div class="color-row">
+          <div class="cdot sel" style="background:#ffffff;box-shadow:inset 0 0 0 1px #ccc;" title="Blanco"   onclick="setColor('#ffffff',this)"></div>
+          <div class="cdot"     style="background:#1a1a1a;" title="Negro"    onclick="setColor('#1a1a1a',this)"></div>
+          <div class="cdot"     style="background:#c0392b;" title="Rojo"     onclick="setColor('#c0392b',this)"></div>
+          <div class="cdot"     style="background:#2471a3;" title="Azul"     onclick="setColor('#2471a3',this)"></div>
+          <div class="cdot"     style="background:#1e8449;" title="Verde"    onclick="setColor('#1e8449',this)"></div>
+          <div class="cdot"     style="background:#f39c12;" title="Amarillo" onclick="setColor('#f39c12',this)"></div>
+          <div class="cdot"     style="background:#7d3c98;" title="Morado"   onclick="setColor('#7d3c98',this)"></div>
+          <div class="cdot"     style="background:#d35400;" title="Naranja"  onclick="setColor('#d35400',this)"></div>
         </div>
-        <button class="order-btn"><i class="ti ti-brand-whatsapp"></i> Enviar por WhatsApp</button>
+      </div>
+
+      <!-- Diseño -->
+      <div class="panel-card">
+        <p class="plabel"><i class="ti ti-upload"></i> Tu diseño</p>
+        <button class="upload-btn" onclick="document.getElementById('fi').click()">
+          <i class="ti ti-photo-plus"></i> Subir imagen
+        </button>
+        <input type="file" id="fi" accept="image/*" style="display:none" onchange="loadDesign(this)">
+        <p class="upload-hint">PNG transparente recomendado · 300 DPI mínimo</p>
+        <div class="design-preview" id="designPreview">
+          <i class="ti ti-photo" style="font-size:20px;"></i><br>Vista previa
+        </div>
+      </div>
+
+      <!-- Ajustes -->
+      <div class="panel-card">
+        <p class="plabel"><i class="ti ti-adjustments-horizontal"></i> Ajustar diseño</p>
+        <div class="ctrl-row">
+          <span class="clbl">Tamaño</span>
+          <input type="range" min="0.1" max="0.7" step="0.01" value="0.35" id="sliderS"
+            oninput="updateDesign();document.getElementById('vS').textContent=Math.round(this.value/0.7*100)+'%'">
+          <span class="cval" id="vS">50%</span>
+        </div>
+        <div class="ctrl-row">
+          <span class="clbl">Pos. X</span>
+          <input type="range" min="-0.3" max="0.3" step="0.01" value="0" id="sliderX" oninput="updateDesign()">
+        </div>
+        <div class="ctrl-row">
+          <span class="clbl">Pos. Y</span>
+          <input type="range" min="-0.3" max="0.3" step="0.01" value="0" id="sliderY" oninput="updateDesign()">
+        </div>
+        <button class="reset-btn" onclick="resetAjustes()"><i class="ti ti-refresh"></i> Restablecer</button>
+      </div>
+
+      <button class="order-btn" onclick="document.getElementById('modalOverlay').classList.add('show')">
+        <i class="ti ti-shopping-cart"></i> Hacer pedido
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIOS ══ -->
+<section class="section" id="sec-precios">
+  <p class="section-label">Lista de precios</p>
+  <p class="section-title">Precios por tipo y nivel</p>
+  <p class="section-sub">Menudeo desde 1 pieza · Mayoreo desde 6 piezas, tallas mixtas permitidas.</p>
+
+  <div class="price-tabs">
+    <button class="ptab active" onclick="showProd('normal',this)"><i class="ti ti-shirt"></i> Corte normal</button>
+    <button class="ptab"        onclick="showProd('oversize',this)"><i class="ti ti-shirt"></i> Oversize</button>
+    <button class="ptab"        onclick="showProd('polo',this)"><i class="ti ti-shirt"></i> Tipo polo</button>
+    <button class="ptab"        onclick="showProd('tallas',this)"><i class="ti ti-ruler"></i> Tallas</button>
+    <button class="ptab"        onclick="showProd('diseno',this)"><i class="ti ti-crop"></i> Medidas</button>
+  </div>
+
+  <div class="price-panel active" id="pp-normal">
+    <div class="levels">
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">1</div><div class="lname">Diseño pequeño</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Logo al pecho · ~10×10 cm</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$160 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$120 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card feat">
+        <div class="feat-label">Más popular</div>
+        <div class="level-head"><div class="lnum">2</div><div class="lname">Diseño mediano</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Tamaño A4 · ~20×28 cm</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$190 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$150 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">3</div><div class="lname">Diseño grande o doble</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> A3 o Pecho + Espalda</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$220 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$180 <small>MXN</small></span></div>
       </div>
     </div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <div class="price-panel" id="pp-oversize">
+    <div class="levels">
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">1</div><div class="lname">Diseño pequeño</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Logo al pecho o minimalista</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$180 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$140 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card feat">
+        <div class="feat-label">Más popular</div>
+        <div class="level-head"><div class="lnum">2</div><div class="lname">Diseño mediano</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Tamaño A4 · ~20×28 cm</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$220 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$180 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">3</div><div class="lname">Diseño grande</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Tamaño A3 o mayor</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$250 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$210 <small>MXN</small></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="price-panel" id="pp-polo">
+    <div class="levels">
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">1</div><div class="lname">Diseño pequeño</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Solo logo al pecho · ~10×10 cm</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$220 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$180 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card feat">
+        <div class="feat-label">Más popular</div>
+        <div class="level-head"><div class="lnum">2</div><div class="lname">Diseño doble</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Pecho + Espalda mediana A4</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$260 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$220 <small>MXN</small></span></div>
+      </div>
+      <div class="level-card">
+        <div class="level-head"><div class="lnum">3</div><div class="lname">Diseño full</div></div>
+        <div class="ldesc"><i class="ti ti-vector"></i> Pecho + Espalda grande A3</div>
+        <div class="price-row"><span class="ptype">Menudeo</span><span class="pval">$290 <small>MXN</small></span></div>
+        <div class="price-row"><span class="ptype">Mayoreo <span class="mbadge">6+ pzas</span></span><span class="pval may">$250 <small>MXN</small></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="price-panel" id="pp-tallas">
+    <div class="table-wrap">
+      <h3 class="table-title">Corte normal y polo — medidas en cm</h3>
+      <table class="sizes-table">
+        <thead><tr><th>Talla</th><th>Pecho</th><th>Largo</th><th>Hombro</th><th>Manga</th></tr></thead>
+        <tbody>
+          <tr><td>S</td><td>48</td><td>68</td><td>42</td><td>20</td></tr>
+          <tr><td>M</td><td>52</td><td>71</td><td>45</td><td>22</td></tr>
+          <tr><td>L</td><td>56</td><td>74</td><td>48</td><td>23</td></tr>
+          <tr><td>XL</td><td>60</td><td>77</td><td>51</td><td>24</td></tr>
+          <tr><td>XXL</td><td>64</td><td>80</td><td>54</td><td>25</td></tr>
+        </tbody>
+      </table>
+      <h3 class="table-title" style="margin-top:1.25rem;">Corte oversize — medidas en cm</h3>
+      <table class="sizes-table">
+        <thead><tr><th>Talla</th><th>Pecho</th><th>Largo</th><th>Hombro</th><th>Manga</th></tr></thead>
+        <tbody>
+          <tr><td>S</td><td>54</td><td>72</td><td>50</td><td>23</td></tr>
+          <tr><td>M</td><td>58</td><td>75</td><td>53</td><td>24</td></tr>
+          <tr><td>L</td><td>62</td><td>78</td><td>56</td><td>25</td></tr>
+          <tr><td>XL</td><td>66</td><td>81</td><td>59</td><td>26</td></tr>
+          <tr><td>XXL</td><td>70</td><td>84</td><td>62</td><td>27</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note"><i class="ti ti-info-circle"></i> Medidas aproximadas ±1 cm según lote de producción.</p>
+    </div>
+  </div>
+
+  <div class="price-panel" id="pp-diseno">
+    <div class="design-specs">
+      <h3 class="table-title">Área máxima de impresión por zona</h3>
+      <div class="design-grid">
+        <div class="design-item"><div class="design-size">10×10 cm</div><div class="design-lbl">Logo pecho (Nv.1)</div></div>
+        <div class="design-item"><div class="design-size">20×28 cm</div><div class="design-lbl">Frente A4 (Nv.2)</div></div>
+        <div class="design-item"><div class="design-size">30×42 cm</div><div class="design-lbl">Frente A3 (Nv.3)</div></div>
+        <div class="design-item"><div class="design-size">20×28 cm</div><div class="design-lbl">Espalda media</div></div>
+        <div class="design-item"><div class="design-size">30×42 cm</div><div class="design-lbl">Espalda grande</div></div>
+        <div class="design-item"><div class="design-size">8×8 cm</div><div class="design-lbl">Manga (detalle)</div></div>
+      </div>
+      <h3 class="table-title" style="margin-top:1.25rem;">Especificaciones del archivo</h3>
+      <table class="sizes-table">
+        <tr><td>Formato aceptado</td><td><strong>PNG, PDF, AI, SVG</strong></td></tr>
+        <tr><td>Resolución mínima</td><td><strong>300 DPI</strong></td></tr>
+        <tr><td>Fondo recomendado</td><td><strong>Transparente (PNG)</strong></td></tr>
+        <tr><td>Modo de color</td><td><strong>RGB o CMYK</strong></td></tr>
+        <tr><td>Tamaño máx. archivo</td><td><strong>50 MB</strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="price-notes">
+    <div class="note-item"><i class="ti ti-users"></i> Mayoreo desde 6 piezas — tallas mixtas permitidas en el mismo pedido.</div>
+    <div class="note-item"><i class="ti ti-clock"></i> Producción en 2–3 días hábiles tras aprobación de prueba digital.</div>
+    <div class="note-item"><i class="ti ti-file-check"></i> Se envía prueba digital antes de producir. Sin aprobación no se produce.</div>
+  </div>
+</section>
+
+<!-- ══ GALERÍA ══ -->
+<section class="section" id="sec-galeria">
+  <p class="section-label">Trabajos realizados</p>
+  <p class="section-title">Galería</p>
+  <p class="section-sub">Algunos ejemplos de nuestros diseños. Pronto aquí verás fotos reales de pedidos.</p>
+
+  <div class="gallery-filters">
+    <button class="gfil active" onclick="filterGallery('all',this)">Todos</button>
+    <button class="gfil" onclick="filterGallery('playera',this)">Playeras</button>
+    <button class="gfil" onclick="filterGallery('taza',this)">Tazas</button>
+    <button class="gfil" onclick="filterGallery('bolsa',this)">Bolsas</button>
+    <button class="gfil" onclick="filterGallery('gorra',this)">Gorras</button>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="gallery-item" data-cat="playera" style="background:linear-gradient(135deg,#EEEDFE,#C8C4F8)">
+      <span style="font-size:48px;">👕</span>
+      <div class="gallery-tag">Playera normal · Azul</div>
+    </div>
+    <div class="gallery-item" data-cat="playera" style="background:linear-gradient(135deg,#1a1a1a,#333)">
+      <span style="font-size:48px;">👕</span>
+      <div class="gallery-tag">Oversize · Negro</div>
+    </div>
+    <div class="gallery-item" data-cat="taza" style="background:linear-gradient(135deg,#FAECE7,#F5C4AF)">
+      <span style="font-size:48px;">☕</span>
+      <div class="gallery-tag">Taza personalizada</div>
+    </div>
+    <div class="gallery-item" data-cat="bolsa" style="background:linear-gradient(135deg,#E6F1FB,#B3D4F2)">
+      <span style="font-size:48px;">👜</span>
+      <div class="gallery-tag">Bolsa de tela</div>
+    </div>
+    <div class="gallery-item" data-cat="gorra" style="background:linear-gradient(135deg,#FAEEDA,#F5D89A)">
+      <span style="font-size:48px;">🧢</span>
+      <div class="gallery-tag">Gorra bordada</div>
+    </div>
+    <div class="gallery-item" data-cat="playera" style="background:linear-gradient(135deg,#E1F5EE,#A8DFC8)">
+      <span style="font-size:48px;">🧥</span>
+      <div class="gallery-tag">Sudadera · Verde</div>
+    </div>
+  </div>
+
+  <p class="gallery-note">
+    <i class="ti ti-camera"></i>
+    ¿Tienes fotos de tus pedidos? Mándanoslas para agregarlas aquí.
+    <a href="https://wa.me/521XXXXXXXXXX" target="_blank">WhatsApp <i class="ti ti-arrow-up-right"></i></a>
+  </p>
+</section>
+
+<!-- ══ TESTIMONIOS ══ -->
+<section class="section" id="sec-testimonios">
+  <p class="section-label">Clientes felices</p>
+  <p class="section-title">Lo que dicen de nosotros</p>
+  <div class="testimonials">
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"Pedí 12 playeras para mi equipo y quedaron perfectas. El proceso fue muy rápido, me mandaron la prueba digital antes de producir y la calidad fue excelente."</p>
+      <div class="tauthor">
+        <div class="tavatar">MR</div>
+        <div><div class="tname">Mario R.</div><div class="tloc"><i class="ti ti-map-pin"></i> San Luis Potosí</div></div>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"El previsualizador 3D me ayudó muchísimo a ver cómo quedaba mi logo antes de pedir. Lo recomiendo al 100%, la atención es rapidísima."</p>
+      <div class="tauthor">
+        <div class="tavatar">CL</div>
+        <div><div class="tname">Claudia L.</div><div class="tloc"><i class="ti ti-map-pin"></i> Monterrey</div></div>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"Pedí tazas personalizadas para regalar en Navidad y llegaron antes de lo prometido. La calidad muy buena para el precio. Volvería a pedir sin dudarlo."</p>
+      <div class="tauthor">
+        <div class="tavatar">JG</div>
+        <div><div class="tname">Jorge G.</div><div class="tloc"><i class="ti ti-map-pin"></i> CDMX</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="section" id="sec-faq">
+  <p class="section-label">Dudas frecuentes</p>
+  <p class="section-title">Preguntas frecuentes</p>
+  <p class="section-sub">Todo lo que necesitas saber antes de hacer tu pedido.</p>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-clock"></i> ¿Cuánto tiempo tarda mi pedido?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">El tiempo de producción es de <strong>2 a 3 días hábiles</strong> una vez que apruebas la prueba digital. Los tiempos de envío dependen de tu ubicación. Pedidos en San Luis Potosí pueden recogerse el mismo día de entrega.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-file"></i> ¿Qué formato necesita mi diseño?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Aceptamos <strong>PNG, PDF, AI y SVG</strong>. La resolución mínima es 300 DPI. Recomendamos PNG con fondo transparente para mejores resultados. Si no tienes tu diseño listo, podemos orientarte.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-users"></i> ¿Puedo pedir tallas mixtas en mayoreo?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Sí. El precio de mayoreo aplica desde <strong>6 piezas</strong> y pueden ser tallas diferentes dentro del mismo pedido. Por ejemplo: 2 tallas M, 3 tallas L y 1 talla XL cuentan como 6 piezas.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-eye"></i> ¿Me envían una prueba antes de producir?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Siempre. Antes de iniciar producción te enviamos una <strong>prueba digital</strong> para que apruebes el diseño, posición y colores. Sin tu confirmación no producimos nada.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-truck"></i> ¿Hacen envíos a todo México?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Sí, enviamos a <strong>toda la república mexicana</strong>. También puedes recoger en punto de entrega local si estás en San Luis Potosí y prefieres ahorrar el envío.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-credit-card"></i> ¿Qué métodos de pago aceptan?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Aceptamos <strong>transferencia bancaria, OXXO Pay, tarjeta de crédito/débito</strong> y efectivo en punto de entrega. Contáctanos por WhatsApp para más detalles sobre el pago.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span><i class="ti ti-shirt"></i> ¿Cuántas piezas mínimo puedo pedir?</span>
+        <i class="ti ti-plus faq-icon"></i>
+      </button>
+      <div class="faq-a">Desde <strong>1 pieza</strong> en precio de menudeo. No hay mínimo de piezas. Si llegas a 6 o más piezas aplica el precio de mayoreo automáticamente.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA FINAL ══ -->
+<section class="cta-section">
+  <p class="section-label" style="color:#a09fef;">Contáctanos</p>
+  <h2>¿Listo para diseñar?</h2>
+  <p>Escríbenos por la red que prefieras y te atendemos al momento.</p>
+  <div class="social-grid">
+    <a class="social-btn wa"  href="https://wa.me/521XXXXXXXXXX" target="_blank"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>
+    <a class="social-btn ig"  href="https://instagram.com/draguzshop" target="_blank"><i class="ti ti-brand-instagram"></i> Instagram</a>
+    <a class="social-btn fb"  href="https://facebook.com/draguzshop" target="_blank"><i class="ti ti-brand-facebook"></i> Facebook</a>
+    <a class="social-btn tt"  href="https://tiktok.com/@draguzshop" target="_blank"><i class="ti ti-brand-tiktok"></i> TikTok</a>
+    <a class="social-btn tw"  href="https://twitter.com/draguzshop" target="_blank"><i class="ti ti-brand-twitter"></i> Twitter/X</a>
+    <a class="social-btn em"  href="mailto:draguzshop@gmail.com"><i class="ti ti-mail"></i> Email</a>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="logo" style="font-size:16px;margin-bottom:.5rem;">DRAGUZ<span>.</span>SHOP</div>
+  <p>© 2025 Draguz Shop · Todos los derechos reservados</p>
+  <p style="margin-top:4px;">Hecho con amor en México 🇲🇽 · San Luis Potosí</p>
+</footer>
+
+<!-- ══ MODAL PEDIDO ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>¿Por dónde nos contactas?</h3>
+      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('show')">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <p>Elige tu red favorita y te atendemos al momento.</p>
+    <div class="social-grid modal-social">
+      <a class="social-btn wa"  href="https://wa.me/521XXXXXXXXXX" target="_blank"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>
+      <a class="social-btn ig"  href="https://instagram.com/draguzshop" target="_blank"><i class="ti ti-brand-instagram"></i> Instagram</a>
+      <a class="social-btn fb"  href="https://facebook.com/draguzshop" target="_blank"><i class="ti ti-brand-facebook"></i> Facebook</a>
+      <a class="social-btn tt"  href="https://tiktok.com/@draguzshop" target="_blank"><i class="ti ti-brand-tiktok"></i> TikTok</a>
+      <a class="social-btn tw"  href="https://twitter.com/draguzshop" target="_blank"><i class="ti ti-brand-twitter"></i> Twitter/X</a>
+      <a class="social-btn em"  href="mailto:draguzshop@gmail.com"><i class="ti ti-mail"></i> Email</a>
+    </div>
+    <button class="close-btn" onclick="document.getElementById('modalOverlay').classList.remove('show')">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ── Scroll con offset para el nav sticky ──
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navH = document.getElementById('mainNav').offsetHeight + 16;
+  const top  = el.getBoundingClientRect().top + window.scrollY - navH;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// ── Tabs de precios ──
+function showProd(id, el) {
+  document.querySelectorAll('.price-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pp-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── Galería con filtro ──
+function filterGallery(cat, btn) {
+  document.querySelectorAll('.gfil').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    const show = cat === 'all' || item.dataset.cat === cat;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ── FAQ accordion ──
+function toggleFaq(btn) {
+  const a  = btn.nextElementSibling;
+  const ic = btn.querySelector('.faq-icon');
+  const isOpen = a.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(x => x.classList.remove('open'));
+  document.querySelectorAll('.faq-icon').forEach(x => x.classList.remove('rot'));
+  if (!isOpen) { a.classList.add('open'); ic.classList.add('rot'); }
+}
+
+// ── Color de prenda con dot activo ──
+function setColor(hex, dot) {
+  document.querySelectorAll('.cdot').forEach(d => d.classList.remove('sel'));
+  dot.classList.add('sel');
+  window.cambiarColorPlayera && window.cambiarColorPlayera(hex);
+}
+
+// ── Reset sliders ──
+function resetAjustes() {
+  document.getElementById('sliderS').value = 0.35;
+  document.getElementById('sliderX').value = 0;
+  document.getElementById('sliderY').value = 0;
+  document.getElementById('vS').textContent = '50%';
+  window.updateDesign && window.updateDesign();
+}
+
+// ── Ocultar loader cuando canvas esté listo ──
+window.addEventListener('shirtLoaded', () => {
+  const loader = document.getElementById('canvasLoader');
+  if (loader) loader.style.display = 'none';
+});
+
+// ── Active nav link al hacer scroll ──
+const sections = ['sec-hero','sec-como','sec-studio','sec-precios','sec-galeria','sec-faq'];
+window.addEventListener('scroll', () => {
+  const navH = document.getElementById('mainNav').offsetHeight;
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= navH + 40) current = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
