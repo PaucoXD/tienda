@@ -258,3 +258,37 @@ window.addEventListener('resize', () => {
   controls.update();
   renderer.render(scene, camera);
 })();
+
+python3 << 'PY'
+with open('/home/claude/app.js', 'r') as f:
+    content = f.read()
+
+# Agregar diagnóstico al inicio, antes del loader
+diag = '''
+// ── DIAGNÓSTICO — verifica que el GLB existe antes de cargar ──
+fetch('./playera.glb', { method: 'HEAD' })
+  .then(r => {
+    if (!r.ok) {
+      hideLoader();
+      setStatus(`❌ playera.glb no encontrado (HTTP ${r.status}) — asegúrate de subirlo al repo`);
+    } else {
+      const mb = parseInt(r.headers.get('content-length')||0) / 1024 / 1024;
+      console.log(`✅ playera.glb encontrado${mb > 0 ? ' ('+mb.toFixed(1)+'MB)' : ''}`);
+    }
+  })
+  .catch(e => {
+    console.warn('No se pudo verificar el GLB:', e);
+  });
+
+'''
+
+# Insertar después de la línea del setStatus inicial
+content = content.replace(
+    "setStatus('Cargando modelo 3D…');",
+    "setStatus('Cargando modelo 3D…');\n" + diag
+)
+
+with open('/home/claude/app.js', 'w') as f:
+    f.write(content)
+print("Diagnóstico agregado")
+PY
