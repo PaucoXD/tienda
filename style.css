@@ -165,7 +165,8 @@ a { text-decoration: none; color: inherit; }
   border-radius: var(--r-lg); display: block; margin: 0 auto;
   cursor: grab; background: var(--bg-3);
   filter: drop-shadow(0 8px 24px rgba(0,0,0,.1));
-  width: 100%; max-width: 420px; height: auto;
+  width: 100% !important; height: auto !important;
+  max-width: 100%;
 }
 #c:active { cursor: grabbing; }
 .canvas-loader {
