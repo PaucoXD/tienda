@@ -1,35 +1,45 @@
 /**
- * Draguz Shop — app.js v7
- * - Diseño centrado usando bounding box real del modelo
- * - flipY=false en textura del plano hijo (evita volteo)
- * - Posición calculada en coordenadas locales reales
+ * Draguz Shop — app.js v8
+ * Sin with statements, compatible con ES modules strict mode
  */
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
 import { GLTFLoader }    from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js';
 
+// ── HELPERS UI ────────────────────────────────
+function setStatus(msg) {
+  const el = document.getElementById('canvasStatus');
+  if (el) el.textContent = msg;
+}
+function hideLoader() {
+  const el = document.getElementById('canvasLoader');
+  if (el) el.style.display = 'none';
+}
+
 // ── CANVAS RESPONSIVO ─────────────────────────
 const canvasEl = document.getElementById('c');
 const wrapEl   = canvasEl.closest('.canvas-wrap');
+
 function getSize() {
-  return Math.max(260, Math.min(wrapEl ? wrapEl.clientWidth - 40 : 380, 520));
+  const w = wrapEl ? wrapEl.clientWidth - 40 : 380;
+  return Math.max(260, Math.min(w, 520));
 }
+
 let SIZE = getSize();
 canvasEl.width  = SIZE;
 canvasEl.height = SIZE;
-canvasEl.style.cssText = `width:${SIZE}px;height:${SIZE}px;`;
+canvasEl.style.width  = SIZE + 'px';
+canvasEl.style.height = SIZE + 'px';
 
 // ── RENDERER ──────────────────────────────────
-let renderer;
-try {
-  renderer = new THREE.WebGLRenderer({
-    canvas: canvasEl, alpha: true, antialias: true,
-    powerPreference: 'default',
-    failIfMajorPerformanceCaveat: false,
-  });
-} catch(e) { setStatus('WebGL no disponible en este navegador'); throw e; }
-
+const renderer = new THREE.WebGLRenderer({
+  canvas:          canvasEl,
+  alpha:           true,
+  antialias:       true,
+  powerPreference: 'default',
+  failIfMajorPerformanceCaveat: false,
+});
 renderer.setSize(SIZE, SIZE);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.outputEncoding      = THREE.sRGBEncoding;
@@ -38,27 +48,31 @@ renderer.toneMappingExposure = 0.95;
 renderer.shadowMap.enabled   = true;
 renderer.shadowMap.type      = THREE.PCFSoftShadowMap;
 
-// ── ESCENA / CÁMARA / CONTROLES ───────────────
+// ── ESCENA / CÁMARA ───────────────────────────
 const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 1000);
 camera.position.set(0, 0, 3.5);
 
+// ── CONTROLES ─────────────────────────────────
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enablePan = false; controls.enableDamping = true;
-controls.dampingFactor = 0.08; controls.autoRotate = true;
+controls.enablePan       = false;
+controls.enableDamping   = true;
+controls.dampingFactor   = 0.08;
+controls.autoRotate      = true;
 controls.autoRotateSpeed = 0.6;
-controls.minPolarAngle = Math.PI * 0.1;
-controls.maxPolarAngle = Math.PI * 0.9;
-canvasEl.addEventListener('pointerdown', () => { controls.autoRotate = false; });
+controls.minPolarAngle   = Math.PI * 0.1;
+controls.maxPolarAngle   = Math.PI * 0.9;
+canvasEl.addEventListener('pointerdown', function() { controls.autoRotate = false; });
 
-// ── ILUMINACIÓN ESTUDIO ───────────────────────
+// ── ILUMINACIÓN ───────────────────────────────
 scene.add(new THREE.AmbientLight(0xfff8f0, 0.55));
 scene.add(new THREE.HemisphereLight(0xdde8ff, 0xfff0d0, 0.4));
 
 const keyLight = new THREE.DirectionalLight(0xfff5e8, 1.4);
 keyLight.position.set(3, 6, 5);
 keyLight.castShadow = true;
-keyLight.shadow.mapSize.set(1024, 1024);
+keyLight.shadow.mapSize.width  = 1024;
+keyLight.shadow.mapSize.height = 1024;
 keyLight.shadow.radius = 4;
 keyLight.shadow.bias   = -0.001;
 scene.add(keyLight);
@@ -67,31 +81,20 @@ const fillLight = new THREE.DirectionalLight(0xd0e8ff, 0.5);
 fillLight.position.set(-4, 2, 3);
 scene.add(fillLight);
 
-scene.add(Object.assign(new THREE.DirectionalLight(0xffffff, 0.2),
-  { position: new THREE.Vector3(0, -2, -4) }));
+const rimLight = new THREE.DirectionalLight(0xffffff, 0.2);
+rimLight.position.set(0, -2, -4);
+scene.add(rimLight);
 
 // ── ESTADO ────────────────────────────────────
-let shirtModel = null;
-let meshes     = [];
-let shirtColor = '#ffffff';
-// Bounding box EN ESPACIO LOCAL del modelo (se calcula tras cargar)
-let localBox   = new THREE.Box3();
-let localSize  = new THREE.Vector3(1, 1.4, 0.3);
-let localCenter = new THREE.Vector3(0, 0, 0);
-
-let designMesh = null;
-let designTex  = null;
-// offsetX/Y en fracción del tamaño local (0 = centro del pecho)
-let dp = { scale: 0.42, offsetX: 0.0, offsetY: 0.0 };
-let modelReady = false;
-
-// ── HELPERS ───────────────────────────────────
-function setStatus(msg) {
-  const el = document.getElementById('canvasStatus'); if (el) el.textContent = msg;
-}
-function hideLoader() {
-  const el = document.getElementById('canvasLoader'); if (el) el.style.display = 'none';
-}
+let shirtModel  = null;
+let meshes      = [];
+let shirtColor  = '#ffffff';
+let localBox    = new THREE.Box3();
+let localSize   = new THREE.Vector3(1, 1.4, 0.3);
+let designMesh  = null;
+let designTex   = null;
+let modelReady  = false;
+let dp          = { scale: 0.42, offsetX: 0.0, offsetY: 0.0 };
 
 // ── PLANO DEL DISEÑO ──────────────────────────
 function buildDesignMesh() {
@@ -103,126 +106,132 @@ function buildDesignMesh() {
   }
   if (!designTex || !shirtModel) return;
 
-  // Proporciones reales de la imagen
-  const img   = designTex.image;
-  const ratio = (img && img.width > 0) ? img.height / img.width : 1;
-  const w     = localSize.x * dp.scale;
-  const h     = w * ratio;
+  var img   = designTex.image;
+  var ratio = (img && img.width > 0) ? img.height / img.width : 1;
+  var w     = localSize.x * dp.scale;
+  var h     = w * ratio;
 
-  designMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(w, h),
-    new THREE.MeshBasicMaterial({
-      map:         designTex,
-      transparent: true,
-      alphaTest:   0.01,
-      color:       0xffffff,   // nunca hereda color de prenda
-      depthWrite:  false,
-    })
-  );
+  var geo = new THREE.PlaneGeometry(w, h);
+  var mat = new THREE.MeshBasicMaterial({
+    map:         designTex,
+    transparent: true,
+    alphaTest:   0.01,
+    color:       0xffffff,
+    depthWrite:  false,
+  });
+
+  designMesh = new THREE.Mesh(geo, mat);
   designMesh.renderOrder = 2;
 
-  // Centro del frente en coordenadas LOCALES del modelo:
-  // X = centro horizontal del bounding box
-  // Y = ligeramente arriba del centro vertical (zona pecho)
-  // Z = cara frontal del bounding box + pequeño offset
-  const cx = localCenter.x + localSize.x * dp.offsetX;
-  const cy = localCenter.y + localSize.y * 0.12 + localSize.y * dp.offsetY; // +12% = zona pecho
-  const cz = localBox.max.z + 0.015;  // cara frontal real del modelo
-
+  var cx = localSize.x * dp.offsetX;
+  var cy = localSize.y * 0.12 + localSize.y * dp.offsetY;
+  var cz = localBox.max.z + 0.015;
   designMesh.position.set(cx, cy, cz);
 
-  // Es hijo del modelo → rota con él automáticamente
   shirtModel.add(designMesh);
 }
 
 // ── CARGAR MODELO ─────────────────────────────
 setStatus('Cargando modelo 3D…');
-const loadTimeout = setTimeout(() => {
+
+var loadTimeout = setTimeout(function() {
   if (!modelReady) {
     hideLoader();
-    setStatus('⚠️ Verifica que playera.glb esté en la raíz del repo junto a index.html');
+    setStatus('Tiempo agotado — verifica que playera.glb esté en el repo');
   }
-}, 25000);
+}, 30000);
 
-new GLTFLoader().load('./playera.glb',
-  (gltf) => {
-    clearTimeout(loadTimeout);
-    modelReady = true;
-    shirtModel = gltf.scene;
+// Verificar que el archivo existe antes de cargar
+fetch('./playera.glb', { method: 'HEAD' })
+  .then(function(r) {
+    if (!r.ok) {
+      clearTimeout(loadTimeout);
+      hideLoader();
+      setStatus('playera.glb no encontrado (error ' + r.status + ') — súbelo al repo');
+      return;
+    }
+    // Archivo existe, proceder a cargar
+    cargarModelo();
+  })
+  .catch(function() {
+    // fetch falló (posible CORS en local) — intentar cargar directamente
+    cargarModelo();
+  });
 
-    // 1. Calcular bounding box ANTES de centrar
-    const worldBox  = new THREE.Box3().setFromObject(shirtModel);
-    const worldSize = worldBox.getSize(new THREE.Vector3());
-    const worldCenter = worldBox.getCenter(new THREE.Vector3());
+function cargarModelo() {
+  var loader = new GLTFLoader();
+  loader.load(
+    './playera.glb',
 
-    // 2. Centrar el modelo en el origen
-    shirtModel.position.sub(worldCenter);
+    function(gltf) {
+      clearTimeout(loadTimeout);
+      modelReady  = true;
+      shirtModel  = gltf.scene;
 
-    // 3. Calcular bounding box LOCAL (después de centrar = en espacio local)
-    localBox.setFromObject(shirtModel);
-    localSize.copy(worldSize);
-    localCenter.set(0, 0, 0); // después de centrar, el centro local es el origen
+      var box    = new THREE.Box3().setFromObject(shirtModel);
+      var center = box.getCenter(new THREE.Vector3());
+      localSize  = box.getSize(new THREE.Vector3());
+      shirtModel.position.sub(center);
 
-    // 4. Ajustar cámara
-    const maxDim = Math.max(localSize.x, localSize.y, localSize.z);
-    camera.position.set(0, localSize.y * 0.05, maxDim * 1.9);
-    controls.target.set(0, 0, 0);
-    controls.minDistance = maxDim * 0.6;
-    controls.maxDistance = maxDim * 6;
-    controls.update();
+      localBox.setFromObject(shirtModel);
 
-    // 5. Aplicar material PBR
-    shirtModel.traverse(child => {
-      if (!child.isMesh) return;
-      meshes.push(child);
-      child.castShadow = child.receiveShadow = true;
-      child.material = new THREE.MeshStandardMaterial({
-        color:     new THREE.Color(shirtColor),
-        roughness: 0.92,
-        metalness: 0.0,
-        side:      THREE.DoubleSide,
+      var maxDim = Math.max(localSize.x, localSize.y, localSize.z);
+      camera.position.set(0, localSize.y * 0.05, maxDim * 1.9);
+      controls.target.set(0, 0, 0);
+      controls.minDistance = maxDim * 0.6;
+      controls.maxDistance = maxDim * 6;
+      controls.update();
+
+      shirtModel.traverse(function(child) {
+        if (!child.isMesh) return;
+        meshes.push(child);
+        child.castShadow    = true;
+        child.receiveShadow = true;
+        child.material = new THREE.MeshStandardMaterial({
+          color:     new THREE.Color(shirtColor),
+          roughness: 0.92,
+          metalness: 0.0,
+          side:      THREE.DoubleSide,
+        });
       });
-    });
 
-    scene.add(shirtModel);
-    hideLoader();
-    setStatus('Gira con mouse o dedo · Scroll para zoom');
-    window.dispatchEvent(new Event('shirtLoaded'));
+      scene.add(shirtModel);
+      hideLoader();
+      setStatus('Gira con mouse o dedo · Scroll para zoom');
+      window.dispatchEvent(new Event('shirtLoaded'));
 
-    // Log para debug — muestra dónde está el frente real
-    console.log('Modelo cargado. BBox local:', {
-      min: localBox.min, max: localBox.max, size: localSize,
-      fronteZ: localBox.max.z
-    });
+      if (designTex) buildDesignMesh();
+    },
 
-    if (designTex) buildDesignMesh();
-  },
-  (xhr) => {
-    const pct = xhr.total > 0 ? ` ${Math.round(xhr.loaded/xhr.total*100)}%` : '';
-    setStatus(`Cargando modelo…${pct}`);
-  },
-  (err) => {
-    clearTimeout(loadTimeout);
-    hideLoader();
-    console.error('GLB error:', err);
-    setStatus('⚠️ No se encontró playera.glb en la carpeta del repo');
-  }
-);
+    function(xhr) {
+      if (xhr.total > 0) {
+        var pct = Math.round(xhr.loaded / xhr.total * 100);
+        setStatus('Cargando modelo… ' + pct + '%');
+      }
+    },
+
+    function(err) {
+      clearTimeout(loadTimeout);
+      hideLoader();
+      console.error('Error GLB:', err);
+      setStatus('Error al cargar playera.glb — ' + (err.message || 'verifica el archivo'));
+    }
+  );
+}
 
 // ── API PÚBLICA ───────────────────────────────
 window.cambiarColorPlayera = function(hex) {
   shirtColor = hex;
-  meshes.forEach(m => m.material.color.set(hex));
-  // designMesh usa MeshBasicMaterial con color:0xffffff → nunca cambia
+  meshes.forEach(function(m) { m.material.color.set(hex); });
 };
 
 window.loadDesign = function(input) {
-  const file = input.files[0];
+  var file = input.files[0];
   if (!file) return;
-  const url = URL.createObjectURL(file);
+  var url = URL.createObjectURL(file);
 
-  new THREE.TextureLoader().load(url, (tex) => {
-    // flipY=false porque el plano es hijo del modelo y ya tiene la orientación correcta
+  var texLoader = new THREE.TextureLoader();
+  texLoader.load(url, function(tex) {
     tex.encoding  = THREE.sRGBEncoding;
     tex.flipY     = false;
     tex.minFilter = THREE.LinearFilter;
@@ -232,9 +241,10 @@ window.loadDesign = function(input) {
     designTex = tex;
     buildDesignMesh();
 
-    const prev = document.getElementById('designPreview');
-    if (prev) prev.innerHTML =
-      `<img src="${url}" style="max-height:56px;max-width:100%;object-fit:contain;border-radius:6px;">`;
+    var prev = document.getElementById('designPreview');
+    if (prev) {
+      prev.innerHTML = '<img src="' + url + '" style="max-height:56px;max-width:100%;object-fit:contain;border-radius:6px;">';
+    }
   });
 };
 
@@ -246,49 +256,17 @@ window.updateDesign = function() {
 };
 
 // ── RESIZE ────────────────────────────────────
-window.addEventListener('resize', () => {
+window.addEventListener('resize', function() {
   SIZE = getSize();
   renderer.setSize(SIZE, SIZE);
-  canvasEl.style.cssText = `width:${SIZE}px;height:${SIZE}px;`;
+  canvasEl.style.width  = SIZE + 'px';
+  canvasEl.style.height = SIZE + 'px';
 });
 
 // ── RENDER LOOP ───────────────────────────────
-(function animate() {
+function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
-})();
-
-python3 << 'PY'
-with open('/home/claude/app.js', 'r') as f:
-    content = f.read()
-
-# Agregar diagnóstico al inicio, antes del loader
-diag = '''
-// ── DIAGNÓSTICO — verifica que el GLB existe antes de cargar ──
-fetch('./playera.glb', { method: 'HEAD' })
-  .then(r => {
-    if (!r.ok) {
-      hideLoader();
-      setStatus(`❌ playera.glb no encontrado (HTTP ${r.status}) — asegúrate de subirlo al repo`);
-    } else {
-      const mb = parseInt(r.headers.get('content-length')||0) / 1024 / 1024;
-      console.log(`✅ playera.glb encontrado${mb > 0 ? ' ('+mb.toFixed(1)+'MB)' : ''}`);
-    }
-  })
-  .catch(e => {
-    console.warn('No se pudo verificar el GLB:', e);
-  });
-
-'''
-
-# Insertar después de la línea del setStatus inicial
-content = content.replace(
-    "setStatus('Cargando modelo 3D…');",
-    "setStatus('Cargando modelo 3D…');\n" + diag
-)
-
-with open('/home/claude/app.js', 'w') as f:
-    f.write(content)
-print("Diagnóstico agregado")
-PY
+}
+animate();
