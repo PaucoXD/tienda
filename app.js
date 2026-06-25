@@ -1,8 +1,9 @@
 /**
- * Draguz Shop — app.js v9
- * - Material correcto (no transparente)
- * - Diseño centrado en pecho con valores absolutos del bbox real
- * - flipY dinámico según orientación del modelo
+ * Draguz Shop — app.js v10
+ * Fix definitivo:
+ * - Raycaster para encontrar el frente REAL de la playera
+ * - buildDesignMesh no se llama múltiples veces
+ * - Playera opaca con bordes visibles
  */
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
@@ -38,7 +39,6 @@ var renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(SIZE, SIZE);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-// Sin toneMapping — colores directos, sin procesamiento que aclare la tela
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping    = THREE.NoToneMapping;
 
@@ -59,27 +59,47 @@ controls.maxPolarAngle   = Math.PI * 0.9;
 canvasEl.addEventListener('pointerdown', function() { controls.autoRotate = false; });
 
 // ── ILUMINACIÓN ───────────────────────────────
-// Ambient fuerte para que la tela no quede oscura
-scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-
-var key = new THREE.DirectionalLight(0xffffff, 0.8);
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+var key = new THREE.DirectionalLight(0xffffff, 0.6);
 key.position.set(2, 4, 5);
 scene.add(key);
-
-var fill = new THREE.DirectionalLight(0xffffff, 0.4);
+var fill = new THREE.DirectionalLight(0xffffff, 0.3);
 fill.position.set(-3, 1, 2);
 scene.add(fill);
 
 // ── ESTADO ────────────────────────────────────
-var shirtModel = null;
-var meshes     = [];
-var shirtColor = '#ffffff';
-var bbox       = new THREE.Box3();
-var bsize      = new THREE.Vector3();
-var designMesh = null;
-var designTex  = null;
-var modelReady = false;
-var dp         = { scale: 0.45, offsetX: 0.0, offsetY: 0.0 };
+var shirtModel  = null;
+var meshes      = [];
+var shirtColor  = '#ffffff';
+var bsize       = new THREE.Vector3();
+var designMesh  = null;
+var designTex   = null;
+var modelReady  = false;
+var dp          = { scale: 0.45, offsetX: 0.0, offsetY: 0.0 };
+
+// Posición real del frente (encontrada con raycaster)
+var frontZ      = 0.1;
+var modelCenterY = 0;
+
+// ── ENCONTRAR FRENTE CON RAYCASTER ────────────
+function findFrontZ() {
+  // Lanzar rayos desde adelante hacia el modelo para encontrar el Z real del frente
+  var raycaster = new THREE.Raycaster();
+  var origin    = new THREE.Vector3(0, modelCenterY, 10); // desde adelante
+  var direction = new THREE.Vector3(0, 0, -1);            // hacia el modelo
+  raycaster.set(origin, direction);
+
+  var hits = raycaster.intersectObjects(meshes, false);
+  if (hits.length > 0) {
+    frontZ = hits[0].point.z;
+    console.log('Frente detectado con raycaster: Z =', frontZ.toFixed(4));
+  } else {
+    // Fallback: usar bbox
+    var box = new THREE.Box3().setFromObject(shirtModel);
+    frontZ  = box.max.z;
+    console.log('Raycaster sin hit, usando bbox.max.z:', frontZ.toFixed(4));
+  }
+}
 
 // ── PLANO DEL DISEÑO ──────────────────────────
 function buildDesignMesh() {
@@ -108,22 +128,16 @@ function buildDesignMesh() {
   );
   designMesh.renderOrder = 2;
 
-  // Posición en coordenadas locales del modelo
-  // offsetY positivo = zona pecho (arriba del centro)
+  // Usar el Z real encontrado por raycaster
   var px = bsize.x * dp.offsetX;
-  var py = bsize.y * (0.15 + dp.offsetY);  // 15% arriba del centro = pecho
-  var pz = bbox.max.z + 0.02;              // frente del modelo
+  var py = modelCenterY + bsize.y * (0.18 + dp.offsetY);
+  var pz = frontZ + 0.02;
 
   designMesh.position.set(px, py, pz);
   shirtModel.add(designMesh);
 
-  // Debug en consola
-  console.log('BBox:', {
-    min: bbox.min.toArray().map(function(v){return v.toFixed(3);}),
-    max: bbox.max.toArray().map(function(v){return v.toFixed(3);}),
-    size: bsize.toArray().map(function(v){return v.toFixed(3);}),
-    designPos: [px.toFixed(3), py.toFixed(3), pz.toFixed(3)]
-  });
+  console.log('Diseño colocado en:', px.toFixed(3), py.toFixed(3), pz.toFixed(3),
+    '| bsize:', bsize.x.toFixed(3), bsize.y.toFixed(3), bsize.z.toFixed(3));
 }
 
 // ── CARGAR MODELO ─────────────────────────────
@@ -132,58 +146,54 @@ setStatus('Cargando modelo 3D…');
 var loadTimeout = setTimeout(function() {
   if (!modelReady) {
     hideLoader();
-    setStatus('Tiempo de carga agotado — verifica playera.glb en el repo');
+    setStatus('Tiempo agotado — verifica que playera.glb esté en el repo');
   }
 }, 30000);
 
 function cargarModelo() {
   var loader = new GLTFLoader();
-  loader.load(
-    './playera.glb',
+  loader.load('./playera.glb',
 
     function onLoad(gltf) {
       clearTimeout(loadTimeout);
       modelReady = true;
       shirtModel = gltf.scene;
 
-      // Centrar modelo en origen
-      var worldBox = new THREE.Box3().setFromObject(shirtModel);
-      var center   = worldBox.getCenter(new THREE.Vector3());
+      // Centrar en origen
+      var box    = new THREE.Box3().setFromObject(shirtModel);
+      var center = box.getCenter(new THREE.Vector3());
+      var size   = box.getSize(new THREE.Vector3());
       shirtModel.position.sub(center);
+      bsize.copy(size);
+      modelCenterY = 0; // después de centrar, centro Y = 0
 
-      // Recalcular bbox en coordenadas locales (ya centrado)
-      bbox.setFromObject(shirtModel);
-      bbox.getSize(bsize);
-
-      console.log('Modelo centrado. BBox local:', {
-        min: bbox.min.toArray().map(function(v){return v.toFixed(3);}),
-        max: bbox.max.toArray().map(function(v){return v.toFixed(3);}),
-        size: bsize.toArray().map(function(v){return v.toFixed(3);})
-      });
-
-      // Ajustar cámara al tamaño real
-      var maxDim = Math.max(bsize.x, bsize.y, bsize.z);
-      camera.position.set(0, bsize.y * 0.05, maxDim * 1.9);
+      // Ajustar cámara
+      var maxDim = Math.max(size.x, size.y, size.z);
+      camera.position.set(0, size.y * 0.05, maxDim * 1.9);
       controls.target.set(0, 0, 0);
       controls.minDistance = maxDim * 0.5;
       controls.maxDistance = maxDim * 7;
       controls.update();
 
-      // Material tela — opaco, sin transparencia
+      // Material opaco
       shirtModel.traverse(function(child) {
         if (!child.isMesh) return;
         meshes.push(child);
         child.material = new THREE.MeshStandardMaterial({
-          color:     new THREE.Color(shirtColor),
-          roughness: 0.85,
-          metalness: 0.0,
-          side:      THREE.DoubleSide,
+          color:       new THREE.Color(shirtColor),
+          roughness:   0.85,
+          metalness:   0.0,
+          side:        THREE.DoubleSide,
           transparent: false,
           opacity:     1.0,
         });
       });
 
       scene.add(shirtModel);
+
+      // Encontrar frente real con raycaster DESPUÉS de agregar a la escena
+      findFrontZ();
+
       hideLoader();
       setStatus('Gira con mouse o dedo · Scroll para zoom');
       window.dispatchEvent(new Event('shirtLoaded'));
@@ -206,20 +216,17 @@ function cargarModelo() {
   );
 }
 
-// Verificar que el archivo existe, luego cargar
 fetch('./playera.glb', { method: 'HEAD' })
   .then(function(r) {
     if (!r.ok) {
       clearTimeout(loadTimeout);
       hideLoader();
-      setStatus('playera.glb no encontrado (HTTP ' + r.status + ') — súbelo al repo');
+      setStatus('playera.glb no encontrado (HTTP ' + r.status + ')');
       return;
     }
     cargarModelo();
   })
-  .catch(function() {
-    cargarModelo(); // intentar de todos modos (falla en local por CORS)
-  });
+  .catch(function() { cargarModelo(); });
 
 // ── API PÚBLICA ───────────────────────────────
 window.cambiarColorPlayera = function(hex) {
@@ -231,18 +238,14 @@ window.loadDesign = function(input) {
   var file = input.files[0];
   if (!file) return;
   var url = URL.createObjectURL(file);
-  var tl  = new THREE.TextureLoader();
-
-  tl.load(url, function(tex) {
+  new THREE.TextureLoader().load(url, function(tex) {
     tex.encoding  = THREE.sRGBEncoding;
     tex.flipY     = false;
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
-
     if (designTex) designTex.dispose();
     designTex = tex;
     buildDesignMesh();
-
     var prev = document.getElementById('designPreview');
     if (prev) prev.innerHTML =
       '<img src="' + url + '" style="max-height:56px;max-width:100%;object-fit:contain;border-radius:6px;">';
