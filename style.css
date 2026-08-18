@@ -21,7 +21,7 @@ body {
   margin: 0; 
   color: var(--text-1);
   /* 👇 AQUÍ PONES EL NOMBRE DE TU IMAGEN DE FONDO 👇 */
-  background-image: url('fondo.jpg'); 
+  background-image: url('fondo.png'); 
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
