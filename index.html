@@ -59,7 +59,7 @@
         <div class="calc-price">$<span id="calc-total">160</span> MXN</div>
         <p class="calc-note">Precio por pieza: $<span id="calc-precio-unitario">160</span> MXN</p>
         
-        <!-- Este botón genera el mensaje automático para WhatsApp -->
+        <!-- Botón para generar el mensaje automático de WhatsApp -->
         <button class="btn-brand" style="justify-content:center; margin-top:1rem; font-size: 16px;" onclick="enviarWhatsApp()">
           <i class="ti ti-brand-whatsapp" style="font-size:20px;"></i> Enviar Pedido por WhatsApp
         </button>
@@ -77,7 +77,7 @@
 
 <!-- ══ SCRIPT DE LA CALCULADORA ══ -->
 <script>
-// Diccionario exacto de tus precios { menudeo, mayoreo }
+// Diccionario de precios { menudeo, mayoreo }
 const precios = {
   normal: {
     pequeno: { menudeo: 160, mayoreo: 120 },
@@ -104,22 +104,22 @@ function calcularTotal() {
   const diseno = document.getElementById('calc-diseno').value;
   let cantidad = parseInt(document.getElementById('calc-cantidad').value);
   
-  if (isNaN(cantidad) || cantidad < 1) cantidad = 1; // Evitar errores
+  if (isNaN(cantidad) || cantidad < 1) cantidad = 1;
 
-  // Lógica: Si son 6 o más, aplicamos precio de mayoreo
+  // Lógica de mayoreo (a partir de 6 piezas)
   const esMayoreo = cantidad >= 6;
   const tipoPrecio = esMayoreo ? 'mayoreo' : 'menudeo';
 
-  // Mostrar u ocultar el letrero verde de mayoreo
+  // Mostrar u ocultar el aviso verde
   const badge = document.getElementById('badge-mayoreo');
   if (esMayoreo) { badge.classList.add('active'); } 
   else { badge.classList.remove('active'); }
 
-  // Extraer precio y calcular total
+  // Calcular
   precioUnitarioActual = precios[tipo][diseno][tipoPrecio];
   totalActual = precioUnitarioActual * cantidad;
 
-  // Actualizar los números en la pantalla
+  // Imprimir en pantalla
   document.getElementById('calc-precio-unitario').innerText = precioUnitarioActual;
   document.getElementById('calc-total').innerText = totalActual.toLocaleString('es-MX');
 }
@@ -129,7 +129,7 @@ function enviarWhatsApp() {
   const diseno = document.getElementById('calc-diseno').options[document.getElementById('calc-diseno').selectedIndex].text;
   const cantidad = document.getElementById('calc-cantidad').value;
   
-  // Construir el mensaje de texto
+  // Mensaje estructurado para WhatsApp
   const mensaje = `Hola Draguz Shop, me gustaría hacer un pedido:\n\n` +
                   `👕 Prenda: ${tipo}\n` +
                   `📏 Diseño: ${diseno}\n` +
@@ -141,11 +141,10 @@ function enviarWhatsApp() {
   const telefonoDraguz = "528123412206"; 
   const url = `https://wa.me/${telefonoDraguz}?text=${encodeURIComponent(mensaje)}`;
   
-  // Redirigir a WhatsApp
   window.open(url, '_blank');
 }
 
-// Ejecutar el cálculo inicial al cargar la página
+// Ejecutar al cargar la página
 window.onload = calcularTotal;
 </script>
 </body>
